@@ -1,0 +1,24 @@
+{
+  "name": "careermind-ai-agentsunity",
+  "version": "1.0.0",
+  "description": "Autonomous AI Learning + Recruitment Intelligence Platform",
+  "main": "server/src/server.js",
+  "scripts": {
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "dev:ai": "python ai-service/main.py",
+    "start": "npm --prefix server run start",
+    "build:client": "npm --prefix client run build"
+  },
+  "keywords": [
+    "ai",
+    "multi-agent",
+    "career-intelligence",
+    "recruitment",
+    "adaptive-learning",
+    "edtech"
+  ],
+  "author": "AGENTSUNITY Team",
+  "license": "MIT"
+}

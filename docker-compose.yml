@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: careermind_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: careermind_user
+      POSTGRES_PASSWORD: careermind_password
+      POSTGRES_DB: careermind_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:6.0
+    container_name: careermind_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: careermind_ai_service
+    restart: always
+    environment:
+      - PORT=8000
+      - ENVIRONMENT=production
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: careermind_server
+    restart: always
+    environment:
+      - PORT=5000
+      - DATABASE_URL=postgresql://careermind_user:careermind_password@postgres:5432/careermind_db
+      - MONGO_URI=mongodb://mongodb:27017/careermind_ai
+      - AI_SERVICE_URL=http://ai-service:8000
+      - JWT_SECRET=careermind_super_secret_jwt_key_2026
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - mongodb
+      - ai-service
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: careermind_client
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+
+volumes:
+  postgres_data:
+  mongo_data:
